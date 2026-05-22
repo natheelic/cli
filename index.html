@@ -1,0 +1,667 @@
+<!doctype html>
+<html lang="th" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Linux CLI Practice Terminal</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+    }
+
+    body {
+      overflow: hidden;
+    }
+
+    .terminal-scroll::-webkit-scrollbar,
+    .side-scroll::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .terminal-scroll::-webkit-scrollbar-track,
+    .side-scroll::-webkit-scrollbar-track {
+      background: rgba(10, 18, 24, 0.6);
+      border-radius: 999px;
+    }
+
+    .terminal-scroll::-webkit-scrollbar-thumb,
+    .side-scroll::-webkit-scrollbar-thumb {
+      background: rgba(0, 229, 154, 0.45);
+      border-radius: 999px;
+    }
+
+    .scanline {
+      background-image: linear-gradient(
+        rgba(255,255,255,0.035) 1px,
+        transparent 1px
+      );
+      background-size: 100% 4px;
+      pointer-events: none;
+      mix-blend-mode: overlay;
+    }
+
+    .boot-glow {
+      animation: bootPulse 1.4s ease-out both;
+    }
+
+    @keyframes bootPulse {
+      0% { opacity: 0; transform: translateY(2%); filter: blur(5px); }
+      100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+    }
+
+    .blink {
+      animation: blinkCursor 1s steps(2, start) infinite;
+    }
+
+    @keyframes blinkCursor {
+      50% { opacity: 0; }
+    }
+
+    .tab-active {
+      box-shadow: inset 0 -3px 0 currentColor;
+    }
+
+    .terminal-line {
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .crt-card {
+      background:
+        radial-gradient(circle at 18% 0%, rgba(0, 229, 154, 0.12), transparent 28%),
+        radial-gradient(circle at 90% 20%, rgba(45, 212, 255, 0.10), transparent 28%),
+        rgba(9, 17, 23, 0.92);
+    }
+
+    button:focus-visible,
+    input:focus-visible {
+      outline: 3px solid rgba(45, 212, 255, 0.8);
+      outline-offset: 3px;
+    }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="https://cdn.tailwindcss.com/3.4.17" type="text/javascript"></script>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full w-full">
+  <div id="app" class="h-full w-full overflow-auto text-[#D7FFF1]">
+   <div id="backgroundLayer" class="relative min-h-full w-full overflow-hidden bg-[#071116]">
+    <div class="absolute inset-0 opacity-80" style="background: radial-gradient(circle at 10% 12%, rgba(0,229,154,.18), transparent 24%), radial-gradient(circle at 88% 18%, rgba(45,212,255,.14), transparent 28%), linear-gradient(135deg, rgba(7,17,22,1), rgba(4,10,13,1));"></div>
+    <div class="scanline absolute inset-0"></div>
+    <div class="relative z-10 mx-auto flex w-full max-w-7xl flex-col gap-5 px-4 py-5 sm:px-6 lg:px-8">
+     <header class="boot-glow flex flex-col gap-4 rounded-[28px] border border-[#164A42] bg-[#0B1D22]/80 p-5 shadow-2xl shadow-emerald-950/50 lg:flex-row lg:items-center lg:justify-between">
+      <div>
+       <div class="mb-2 inline-flex items-center gap-2 rounded-full border border-[#00E59A]/40 bg-[#00E59A]/10 px-3 py-1 text-sm font-semibold text-[#00E59A]"><i data-lucide="terminal-square" class="h-4 w-4"></i> Linux Training Simulator
+       </div>
+       <h1 id="appTitle" class="font-bold tracking-tight text-[#D7FFF1]">Linux CLI Practice Lab</h1>
+       <p id="appSubtitle" class="mt-2 max-w-3xl text-[#9BC8BE]">ฝึกคำสั่ง Linux พื้นฐานแบบจำลอง Terminal สำหรับนักเรียนหลายคนในเวลาเดียวกัน</p>
+      </div>
+      <div class="flex flex-wrap gap-3"><button id="addStudentBtn" class="inline-flex items-center gap-2 rounded-2xl bg-[#00E59A] px-4 py-3 font-bold text-[#04100D] shadow-lg shadow-emerald-950/40 transition hover:scale-[1.02] hover:brightness-110"> <i data-lucide="user-plus" class="h-5 w-5"></i> <span id="buttonText">เพิ่มผู้ฝึก</span> </button> <button id="resetBtn" class="inline-flex items-center gap-2 rounded-2xl border border-[#2DD4FF]/45 bg-[#2DD4FF]/10 px-4 py-3 font-bold text-[#2DD4FF] transition hover:bg-[#2DD4FF]/20"> <i data-lucide="rotate-ccw" class="h-5 w-5"></i> รีเซ็ตผู้ฝึกนี้ </button>
+      </div>
+     </header>
+     <main class="grid w-full gap-5 lg:grid-cols-[360px_1fr]">
+      <aside class="boot-glow rounded-[28px] border border-[#164A42] bg-[#0B1D22]/80 p-4 shadow-2xl shadow-emerald-950/40" style="animation-delay: .08s;">
+       <section aria-labelledby="studentsHeading" class="mb-5">
+        <div class="mb-3 flex items-center justify-between gap-3">
+         <h2 id="studentsHeading" class="text-xl font-bold text-[#D7FFF1]">ผู้ฝึก</h2><span id="studentCount" class="rounded-full bg-[#00E59A]/10 px-3 py-1 text-sm font-bold text-[#00E59A]">2 คน</span>
+        </div>
+        <div id="studentTabs" class="grid gap-2"></div>
+       </section>
+       <section aria-labelledby="guideHeading" class="side-scroll max-h-[520px] overflow-auto rounded-3xl border border-[#164A42] bg-[#071116]/70 p-4">
+        <h2 id="guideTitle" class="mb-3 text-xl font-bold text-[#D7FFF1]">คำสั่งที่ลองใช้ได้</h2>
+        <div class="grid gap-3 text-sm text-[#9BC8BE]">
+         <div class="rounded-2xl border border-[#164A42] bg-[#0B1D22] p-3">
+          <p class="font-bold text-[#00E59A]">ดูข้อมูล</p>
+          <p><code>pwd</code>, <code>ls</code>, <code>dir</code>, <code>cat file</code>, <code>basename path</code></p>
+         </div>
+         <div class="rounded-2xl border border-[#164A42] bg-[#0B1D22] p-3">
+          <p class="font-bold text-[#00E59A]">จัดการไฟล์</p>
+          <p><code>touch file</code>, <code>cp a b</code>, <code>mv a b</code>, <code>rm file</code></p>
+         </div>
+         <div class="rounded-2xl border border-[#164A42] bg-[#0B1D22] p-3">
+          <p class="font-bold text-[#00E59A]">จัดการโฟลเดอร์</p>
+          <p><code>cd folder</code>, <code>cd ..</code>, <code>mkdir name</code></p>
+         </div>
+         <div class="rounded-2xl border border-[#164A42] bg-[#0B1D22] p-3">
+          <p class="font-bold text-[#00E59A]">คำสั่งช่วยเหลือ</p>
+          <p><code>help</code>, <code>tree</code>, <code>clear</code>, <code>whoami</code></p>
+         </div>
+        </div>
+       </section>
+      </aside>
+      <section class="boot-glow min-w-0 rounded-[28px] border border-[#164A42] crt-card p-4 shadow-2xl shadow-emerald-950/50" style="animation-delay: .16s;" aria-labelledby="terminalHeading">
+       <div class="mb-4 flex flex-col gap-3 rounded-3xl border border-[#164A42] bg-[#071116]/80 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+         <h2 id="terminalHeading" class="text-xl font-bold text-[#D7FFF1]"><span id="terminalLabel">Student Terminal</span>: <span id="activeStudentName">Student 1</span></h2>
+         <p id="hintText" class="mt-1 text-sm text-[#9BC8BE]">พิมพ์ help เพื่อดูคำสั่งทั้งหมด</p>
+        </div>
+        <div class="flex items-center gap-2 text-sm font-bold text-[#00E59A]"><span class="h-3 w-3 rounded-full bg-[#00E59A] shadow-lg shadow-emerald-400/60"></span> ONLINE
+        </div>
+       </div>
+       <div class="overflow-hidden rounded-[24px] border border-[#164A42] bg-[#02090B] shadow-inner shadow-black">
+        <div class="flex items-center gap-2 border-b border-[#164A42] bg-[#0B1D22] px-4 py-3"><span class="h-3 w-3 rounded-full bg-red-400"></span> <span class="h-3 w-3 rounded-full bg-yellow-300"></span> <span class="h-3 w-3 rounded-full bg-[#00E59A]"></span> <span class="ml-3 truncate font-mono text-sm text-[#9BC8BE]">/home/student</span>
+        </div>
+        <div id="terminalOutput" class="terminal-scroll h-[430px] overflow-auto p-4 font-mono text-sm leading-6 text-[#D7FFF1]" role="log" aria-live="polite"></div>
+        <form id="commandForm" class="flex items-center gap-2 border-t border-[#164A42] bg-[#061014] p-3"><label for="commandInput" class="sr-only">พิมพ์คำสั่ง Linux</label> <span id="promptText" class="shrink-0 font-mono text-sm font-bold text-[#00E59A]">student@lab:~$</span> <input id="commandInput" class="w-full rounded-2xl border border-[#164A42] bg-[#0B1D22] px-4 py-3 font-mono text-sm text-[#D7FFF1] placeholder:text-[#6A938B]" placeholder="ลองพิมพ์: ls หรือ mkdir test" autocomplete="off"> <button type="submit" class="rounded-2xl bg-[#00E59A] px-4 py-3 font-bold text-[#04100D] transition hover:brightness-110"> Run </button>
+        </form>
+       </div>
+      </section>
+     </main>
+     <footer class="rounded-[24px] border border-[#164A42] bg-[#0B1D22]/70 px-5 py-4 text-center text-sm text-[#9BC8BE]">
+      แต่ละผู้ฝึกมีไฟล์และโฟลเดอร์ของตัวเอง สามารถสลับแท็บเพื่อฝึกพร้อมกันได้ในหน้าเดียว
+     </footer>
+    </div>
+   </div>
+  </div>
+  <script>
+    const defaultConfig = {
+      app_title: "Linux CLI Practice Lab",
+      app_subtitle: "ฝึกคำสั่ง Linux พื้นฐานแบบจำลอง Terminal สำหรับนักเรียนหลายคนในเวลาเดียวกัน",
+      guide_title: "คำสั่งที่ลองใช้ได้",
+      terminal_label: "Student Terminal",
+      hint_text: "พิมพ์ help เพื่อดูคำสั่งทั้งหมด",
+      button_text: "เพิ่มผู้ฝึก",
+      background_color: "#071116",
+      surface_color: "#0B1D22",
+      text_color: "#D7FFF1",
+      primary_action_color: "#00E59A",
+      secondary_action_color: "#2DD4FF",
+      font_family: "Chakra Petch",
+      font_size: 16
+    };
+
+    let students = [];
+    let activeStudentId = null;
+    let studentNumber = 1;
+
+    function createFileSystem() {
+      return {
+        type: "dir",
+        children: {
+          home: {
+            type: "dir",
+            children: {
+              student: {
+                type: "dir",
+                children: {
+                  "readme.txt": {
+                    type: "file",
+                    content: "Welcome to Linux CLI Practice Lab!\\nTry: ls, pwd, cat readme.txt, mkdir work, touch note.txt"
+                  },
+                  docs: {
+                    type: "dir",
+                    children: {
+                      "lesson.txt": {
+                        type: "file",
+                        content: "Basic Linux commands: pwd, ls, cd, mkdir, touch, cat, cp, mv, rm, basename."
+                      }
+                    }
+                  },
+                  projects: {
+                    type: "dir",
+                    children: {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      };
+    }
+
+    function newStudent(name) {
+      const id = "student-" + Date.now() + "-" + Math.random().toString(16).slice(2);
+      return {
+        id,
+        name,
+        cwd: "/home/student",
+        fs: createFileSystem(),
+        history: [
+          { type: "system", text: "Linux simulator ready. พิมพ์ help เพื่อเริ่มต้น" },
+          { type: "output", text: "ตัวอย่าง: pwd, ls, cat readme.txt, mkdir lab, touch lab/note.txt" }
+        ]
+      };
+    }
+
+    function initStudents() {
+      students = [newStudent("Student 1"), newStudent("Student 2")];
+      studentNumber = 3;
+      activeStudentId = students[0].id;
+      renderStudentTabs();
+      renderActiveStudent();
+    }
+
+    function getActiveStudent() {
+      return students.find(s => s.id === activeStudentId) || students[0];
+    }
+
+    function splitPath(path) {
+      return path.split("/").filter(Boolean);
+    }
+
+    function normalizePath(cwd, inputPath) {
+      if (!inputPath || inputPath === "~") return "/home/student";
+      let parts = inputPath.startsWith("/") ? [] : splitPath(cwd);
+      inputPath.split("/").forEach(part => {
+        if (!part || part === ".") return;
+        if (part === "..") parts.pop();
+        else if (part === "~") parts = ["home", "student"];
+        else parts.push(part);
+      });
+      return "/" + parts.join("/");
+    }
+
+    function getNode(student, path) {
+      if (path === "/") return student.fs;
+      let node = student.fs;
+      for (const part of splitPath(path)) {
+        if (!node.children || !node.children[part]) return null;
+        node = node.children[part];
+      }
+      return node;
+    }
+
+    function getParentAndName(student, path) {
+      const parts = splitPath(path);
+      const name = parts.pop();
+      const parentPath = "/" + parts.join("/");
+      const parent = getNode(student, parentPath === "/" ? "/" : parentPath);
+      return { parent, name, parentPath };
+    }
+
+    function cloneNode(node) {
+      return JSON.parse(JSON.stringify(node));
+    }
+
+    function pathDisplay(path) {
+      return path.replace("/home/student", "~") || "/";
+    }
+
+    function addHistory(student, type, text) {
+      student.history.push({ type, text });
+      if (student.history.length > 160) student.history.shift();
+    }
+
+    function runCommand(student, raw) {
+      const input = raw.trim();
+      if (!input) return;
+      addHistory(student, "command", `${student.name}@lab:${pathDisplay(student.cwd)}$ ${input}`);
+
+      const args = input.match(/(?:[^\s"]+|"[^"]*")+/g)?.map(x => x.replace(/^"|"$/g, "")) || [];
+      const cmd = args[0];
+      const rest = args.slice(1);
+
+      if (cmd === "clear") {
+        student.history = [{ type: "system", text: "หน้าจอถูกล้างแล้ว" }];
+        return;
+      }
+
+      const output = executeCommand(student, cmd, rest);
+      if (output) addHistory(student, output.startsWith("error:") ? "error" : "output", output);
+    }
+
+    function executeCommand(student, cmd, args) {
+      switch (cmd) {
+        case "help":
+          return [
+            "คำสั่งที่ใช้ได้:",
+            "pwd                          แสดงตำแหน่งโฟลเดอร์ปัจจุบัน",
+            "ls หรือ dir                   แสดงไฟล์และโฟลเดอร์",
+            "cd <folder>                  เปลี่ยนโฟลเดอร์ เช่น cd docs, cd ..",
+            "cat <file>                   อ่านไฟล์",
+            "touch <file>                 สร้างไฟล์ว่าง",
+            "mkdir <folder>               สร้างโฟลเดอร์",
+            "cp <source> <target>         คัดลอกไฟล์หรือโฟลเดอร์",
+            "mv <source> <target>         ย้ายหรือเปลี่ยนชื่อ",
+            "rm <file-or-folder>          ลบไฟล์หรือโฟลเดอร์",
+            "basename <path>              แสดงชื่อท้ายสุดของ path",
+            "tree                         ดูโครงสร้างไฟล์",
+            "clear                        ล้างหน้าจอ"
+          ].join("\\n");
+
+        case "pwd":
+          return student.cwd;
+
+        case "whoami":
+          return student.name.toLowerCase().replace(/\s+/g, "_");
+
+        case "ls":
+        case "dir": {
+          const target = normalizePath(student.cwd, args[0] || ".");
+          const node = getNode(student, target);
+          if (!node) return `error: ไม่พบ ${args[0] || "."}`;
+          if (node.type !== "dir") return args[0] || target.split("/").pop();
+          const names = Object.keys(node.children);
+          if (!names.length) return "(empty)";
+          return names.map(name => node.children[name].type === "dir" ? name + "/" : name).join("   ");
+        }
+
+        case "cd": {
+          const target = normalizePath(student.cwd, args[0] || "~");
+          const node = getNode(student, target);
+          if (!node) return `error: ไม่พบโฟลเดอร์ ${args[0] || "~"}`;
+          if (node.type !== "dir") return `error: ${args[0]} ไม่ใช่โฟลเดอร์`;
+          student.cwd = target;
+          return "";
+        }
+
+        case "cat": {
+          if (!args[0]) return "error: โปรดระบุชื่อไฟล์ เช่น cat readme.txt";
+          const target = normalizePath(student.cwd, args[0]);
+          const node = getNode(student, target);
+          if (!node) return `error: ไม่พบไฟล์ ${args[0]}`;
+          if (node.type !== "file") return `error: ${args[0]} เป็นโฟลเดอร์`;
+          return node.content || "";
+        }
+
+        case "touch": {
+          if (!args[0]) return "error: โปรดระบุชื่อไฟล์ เช่น touch note.txt";
+          const target = normalizePath(student.cwd, args[0]);
+          const { parent, name } = getParentAndName(student, target);
+          if (!parent || parent.type !== "dir") return "error: path ไม่ถูกต้อง";
+          if (!name) return "error: ชื่อไฟล์ไม่ถูกต้อง";
+          if (!parent.children[name]) parent.children[name] = { type: "file", content: "" };
+          return `สร้าง/อัปเดตไฟล์ ${name} แล้ว`;
+        }
+
+        case "mkdir": {
+          if (!args[0]) return "error: โปรดระบุชื่อโฟลเดอร์ เช่น mkdir lab";
+          const target = normalizePath(student.cwd, args[0]);
+          const { parent, name } = getParentAndName(student, target);
+          if (!parent || parent.type !== "dir") return "error: path ไม่ถูกต้อง";
+          if (parent.children[name]) return `error: มี ${name} อยู่แล้ว`;
+          parent.children[name] = { type: "dir", children: {} };
+          return `สร้างโฟลเดอร์ ${name}/ แล้ว`;
+        }
+
+        case "cp": {
+          if (args.length < 2) return "error: ใช้รูปแบบ cp <ต้นทาง> <ปลายทาง>";
+          const sourcePath = normalizePath(student.cwd, args[0]);
+          const source = getNode(student, sourcePath);
+          if (!source) return `error: ไม่พบ ${args[0]}`;
+
+          let targetPath = normalizePath(student.cwd, args[1]);
+          const targetNode = getNode(student, targetPath);
+          if (targetNode && targetNode.type === "dir") {
+            targetPath = targetPath + "/" + sourcePath.split("/").pop();
+          }
+
+          const { parent, name } = getParentAndName(student, targetPath);
+          if (!parent || parent.type !== "dir") return "error: path ปลายทางไม่ถูกต้อง";
+          parent.children[name] = cloneNode(source);
+          return `คัดลอก ${args[0]} ไปยัง ${args[1]} แล้ว`;
+        }
+
+        case "mv": {
+          if (args.length < 2) return "error: ใช้รูปแบบ mv <ต้นทาง> <ปลายทาง>";
+          const sourcePath = normalizePath(student.cwd, args[0]);
+          const sourceInfo = getParentAndName(student, sourcePath);
+          if (!sourceInfo.parent || !sourceInfo.parent.children[sourceInfo.name]) return `error: ไม่พบ ${args[0]}`;
+
+          let targetPath = normalizePath(student.cwd, args[1]);
+          const targetNode = getNode(student, targetPath);
+          if (targetNode && targetNode.type === "dir") {
+            targetPath = targetPath + "/" + sourceInfo.name;
+          }
+
+          const targetInfo = getParentAndName(student, targetPath);
+          if (!targetInfo.parent || targetInfo.parent.type !== "dir") return "error: path ปลายทางไม่ถูกต้อง";
+          targetInfo.parent.children[targetInfo.name] = sourceInfo.parent.children[sourceInfo.name];
+          delete sourceInfo.parent.children[sourceInfo.name];
+          return `ย้าย/เปลี่ยนชื่อ ${args[0]} เป็น ${args[1]} แล้ว`;
+        }
+
+        case "rm": {
+          if (!args[0]) return "error: โปรดระบุไฟล์หรือโฟลเดอร์ เช่น rm note.txt";
+          const targetPath = normalizePath(student.cwd, args[0]);
+          if (targetPath === "/" || targetPath === "/home" || targetPath === "/home/student") {
+            return "error: ไม่สามารถลบโฟลเดอร์หลักของผู้ฝึกได้";
+          }
+          const { parent, name } = getParentAndName(student, targetPath);
+          if (!parent || !parent.children[name]) return `error: ไม่พบ ${args[0]}`;
+          delete parent.children[name];
+          return `ลบ ${args[0]} แล้ว`;
+        }
+
+        case "basename": {
+          if (!args[0]) return "error: โปรดระบุ path เช่น basename /home/student/readme.txt";
+          const cleaned = args[0].replace(/\/+$/g, "");
+          return cleaned.split("/").filter(Boolean).pop() || "/";
+        }
+
+        case "tree": {
+          const start = getNode(student, student.cwd);
+          if (!start || start.type !== "dir") return "error: ไม่สามารถแสดง tree ได้";
+          return buildTree(start, pathDisplay(student.cwd).split("/").pop() || "~");
+        }
+
+        default:
+          return `error: ไม่รู้จักคำสั่ง "${cmd}" — พิมพ์ help เพื่อดูคำสั่งที่ใช้ได้`;
+      }
+    }
+
+    function buildTree(node, name, prefix = "") {
+      let lines = [name + "/"];
+      const entries = Object.entries(node.children || {});
+      entries.forEach(([childName, child], index) => {
+        const last = index === entries.length - 1;
+        const connector = last ? "└── " : "├── ";
+        lines.push(prefix + connector + childName + (child.type === "dir" ? "/" : ""));
+        if (child.type === "dir") {
+          const nextPrefix = prefix + (last ? "    " : "│   ");
+          const childLines = buildTree(child, childName, nextPrefix).split("\\n").slice(1);
+          lines.push(...childLines);
+        }
+      });
+      return lines.join("\\n");
+    }
+
+    function renderStudentTabs() {
+      const tabs = document.getElementById("studentTabs");
+      tabs.innerHTML = "";
+      students.forEach(student => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "flex items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left transition hover:scale-[1.01]";
+        const isActive = student.id === activeStudentId;
+        button.style.borderColor = isActive ? getConfig("primary_action_color") : "#164A42";
+        button.style.backgroundColor = isActive ? "rgba(0,229,154,.12)" : "rgba(7,17,22,.75)";
+        button.style.color = isActive ? getConfig("primary_action_color") : getConfig("text_color");
+        button.innerHTML = `
+          <span class="flex items-center gap-2 font-bold">
+            <i data-lucide="monitor" class="h-4 w-4"></i>
+            ${escapeHtml(student.name)}
+          </span>
+          <span class="font-mono text-xs">${escapeHtml(pathDisplay(student.cwd))}</span>
+        `;
+        button.addEventListener("click", () => {
+          activeStudentId = student.id;
+          renderStudentTabs();
+          renderActiveStudent();
+        });
+        tabs.appendChild(button);
+      });
+      document.getElementById("studentCount").textContent = students.length + " คน";
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function renderActiveStudent() {
+      const student = getActiveStudent();
+      if (!student) return;
+      document.getElementById("activeStudentName").textContent = student.name;
+      document.getElementById("promptText").textContent = `${student.name.toLowerCase().replace(/\s+/g, "")}@lab:${pathDisplay(student.cwd)}$`;
+      const output = document.getElementById("terminalOutput");
+      output.innerHTML = "";
+      student.history.forEach(item => {
+        const line = document.createElement("div");
+        line.className = "terminal-line mb-1";
+        if (item.type === "command") line.style.color = getConfig("primary_action_color");
+        else if (item.type === "error") line.style.color = "#FF8A8A";
+        else if (item.type === "system") line.style.color = getConfig("secondary_action_color");
+        else line.style.color = getConfig("text_color");
+        line.textContent = item.text;
+        output.appendChild(line);
+      });
+      const cursor = document.createElement("div");
+      cursor.className = "mt-2 text-[#00E59A]";
+      cursor.innerHTML = '<span class="blink">▋</span>';
+      output.appendChild(cursor);
+      output.scrollTop = output.scrollHeight;
+      renderStudentTabs();
+    }
+
+    function escapeHtml(text) {
+      return String(text).replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      })[char]);
+    }
+
+    function getConfig(key) {
+      return (window.elementSdk && window.elementSdk.config && window.elementSdk.config[key]) || defaultConfig[key];
+    }
+
+    document.getElementById("commandForm").addEventListener("submit", event => {
+      event.preventDefault();
+      const input = document.getElementById("commandInput");
+      const student = getActiveStudent();
+      runCommand(student, input.value);
+      input.value = "";
+      renderActiveStudent();
+      input.focus();
+    });
+
+    document.getElementById("addStudentBtn").addEventListener("click", () => {
+      const student = newStudent("Student " + studentNumber);
+      studentNumber += 1;
+      students.push(student);
+      activeStudentId = student.id;
+      renderStudentTabs();
+      renderActiveStudent();
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      const student = getActiveStudent();
+      const index = students.findIndex(s => s.id === student.id);
+      const reset = newStudent(student.name);
+      reset.id = student.id;
+      students[index] = reset;
+      activeStudentId = reset.id;
+      renderStudentTabs();
+      renderActiveStudent();
+    });
+
+    function applyConfig(config) {
+      const cfg = { ...defaultConfig, ...config };
+      const base = Number(cfg.font_size) || defaultConfig.font_size;
+      const fontStack = `${cfg.font_family}, "Chakra Petch", sans-serif`;
+      const monoStack = `"JetBrains Mono", monospace`;
+
+      document.body.style.fontFamily = fontStack;
+      document.getElementById("backgroundLayer").style.backgroundColor = cfg.background_color;
+      document.getElementById("appTitle").textContent = cfg.app_title;
+      document.getElementById("appSubtitle").textContent = cfg.app_subtitle;
+      document.getElementById("guideTitle").textContent = cfg.guide_title;
+      document.getElementById("terminalLabel").textContent = cfg.terminal_label;
+      document.getElementById("hintText").textContent = cfg.hint_text;
+      document.getElementById("buttonText").textContent = cfg.button_text;
+
+      document.getElementById("appTitle").style.fontSize = `${base * 2.05}px`;
+      document.getElementById("appSubtitle").style.fontSize = `${base * 1}px`;
+      document.getElementById("guideTitle").style.fontSize = `${base * 1.25}px`;
+      document.getElementById("terminalHeading").style.fontSize = `${base * 1.25}px`;
+      document.getElementById("hintText").style.fontSize = `${base * 0.88}px`;
+      document.querySelector("footer").style.fontSize = `${base * 0.85}px`;
+      document.getElementById("terminalOutput").style.fontSize = `${base * 0.9}px`;
+      document.getElementById("commandInput").style.fontSize = `${base * 0.9}px`;
+      document.getElementById("promptText").style.fontSize = `${base * 0.85}px`;
+
+      document.querySelectorAll("header, aside, section.boot-glow, footer").forEach(el => {
+        el.style.backgroundColor = cfg.surface_color + "CC";
+        el.style.borderColor = "#164A42";
+      });
+
+      document.querySelectorAll("h1, h2, p, footer").forEach(el => {
+        if (!el.closest("#terminalOutput")) el.style.color = el.tagName === "P" || el.tagName === "FOOTER" ? "#9BC8BE" : cfg.text_color;
+      });
+
+      document.getElementById("addStudentBtn").style.backgroundColor = cfg.primary_action_color;
+      document.getElementById("addStudentBtn").style.color = "#04100D";
+      document.getElementById("resetBtn").style.borderColor = cfg.secondary_action_color;
+      document.getElementById("resetBtn").style.color = cfg.secondary_action_color;
+      document.getElementById("resetBtn").style.backgroundColor = cfg.secondary_action_color + "1A";
+
+      document.querySelectorAll("code").forEach(el => {
+        el.style.color = cfg.primary_action_color;
+        el.style.fontFamily = monoStack;
+      });
+
+      renderActiveStudent();
+    }
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange: async (config) => {
+          applyConfig(config);
+        },
+        mapToCapabilities: (config) => ({
+          recolorables: [
+            {
+              get: () => config.background_color || defaultConfig.background_color,
+              set: (value) => window.elementSdk.setConfig({ background_color: value })
+            },
+            {
+              get: () => config.surface_color || defaultConfig.surface_color,
+              set: (value) => window.elementSdk.setConfig({ surface_color: value })
+            },
+            {
+              get: () => config.text_color || defaultConfig.text_color,
+              set: (value) => window.elementSdk.setConfig({ text_color: value })
+            },
+            {
+              get: () => config.primary_action_color || defaultConfig.primary_action_color,
+              set: (value) => window.elementSdk.setConfig({ primary_action_color: value })
+            },
+            {
+              get: () => config.secondary_action_color || defaultConfig.secondary_action_color,
+              set: (value) => window.elementSdk.setConfig({ secondary_action_color: value })
+            }
+          ],
+          borderables: [],
+          fontEditable: {
+            get: () => config.font_family || defaultConfig.font_family,
+            set: (value) => window.elementSdk.setConfig({ font_family: value })
+          },
+          fontSizeable: {
+            get: () => config.font_size || defaultConfig.font_size,
+            set: (value) => window.elementSdk.setConfig({ font_size: value })
+          }
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ["app_title", config.app_title || defaultConfig.app_title],
+          ["app_subtitle", config.app_subtitle || defaultConfig.app_subtitle],
+          ["guide_title", config.guide_title || defaultConfig.guide_title],
+          ["terminal_label", config.terminal_label || defaultConfig.terminal_label],
+          ["hint_text", config.hint_text || defaultConfig.hint_text],
+          ["button_text", config.button_text || defaultConfig.button_text]
+        ])
+      });
+    }
+
+    initStudents();
+    applyConfig(window.elementSdk ? window.elementSdk.config : defaultConfig);
+    if (window.lucide) lucide.createIcons();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ff9d08c8ceccdf2',t:'MTc3OTQzMTg3MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
