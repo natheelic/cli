@@ -98,12 +98,14 @@
     <div class="relative z-10 mx-auto flex w-full max-w-7xl flex-col gap-5 px-4 py-5 sm:px-6 lg:px-8">
      <header class="boot-glow flex flex-col gap-4 rounded-[28px] border border-[#164A42] bg-[#0B1D22]/80 p-5 shadow-2xl shadow-emerald-950/50 lg:flex-row lg:items-center lg:justify-between">
       <div>
-       <div class="mb-2 inline-flex items-center gap-2 rounded-full border border-[#00E59A]/40 bg-[#00E59A]/10 px-3 py-1 text-sm font-semibold text-[#00E59A]"><i data-lucide="terminal-square" class="h-4 w-4"></i> Linux Training Simulator
+       <div class="mb-2 inline-flex items-center gap-2 rounded-full border border-[#00E59A]/40 bg-[#00E59A]/10 px-3 py-1 text-sm font-semibold text-[#00E59A]">
+        <i data-lucide="terminal-square" class="h-4 w-4"></i> Linux Training Simulator
        </div>
        <h1 id="appTitle" class="font-bold tracking-tight text-[#D7FFF1]">Linux CLI Practice Lab</h1>
        <p id="appSubtitle" class="mt-2 max-w-3xl text-[#9BC8BE]">ฝึกคำสั่ง Linux พื้นฐานแบบจำลอง Terminal สำหรับนักเรียนหลายคนในเวลาเดียวกัน</p>
       </div>
-      <div class="flex flex-wrap gap-3"><button id="addStudentBtn" class="inline-flex items-center gap-2 rounded-2xl bg-[#00E59A] px-4 py-3 font-bold text-[#04100D] shadow-lg shadow-emerald-950/40 transition hover:scale-[1.02] hover:brightness-110"> <i data-lucide="user-plus" class="h-5 w-5"></i> <span id="buttonText">เพิ่มผู้ฝึก</span> </button> <button id="resetBtn" class="inline-flex items-center gap-2 rounded-2xl border border-[#2DD4FF]/45 bg-[#2DD4FF]/10 px-4 py-3 font-bold text-[#2DD4FF] transition hover:bg-[#2DD4FF]/20"> <i data-lucide="rotate-ccw" class="h-5 w-5"></i> รีเซ็ตผู้ฝึกนี้ </button>
+      <div class="flex flex-wrap gap-3">
+       <button id="addStudentBtn" class="inline-flex items-center gap-2 rounded-2xl bg-[#00E59A] px-4 py-3 font-bold text-[#04100D] shadow-lg shadow-emerald-950/40 transition hover:scale-[1.02] hover:brightness-110"> <i data-lucide="user-plus" class="h-5 w-5"></i> <span id="buttonText">เพิ่มผู้ฝึก</span> </button> <button id="resetBtn" class="inline-flex items-center gap-2 rounded-2xl border border-[#2DD4FF]/45 bg-[#2DD4FF]/10 px-4 py-3 font-bold text-[#2DD4FF] transition hover:bg-[#2DD4FF]/20"> <i data-lucide="rotate-ccw" class="h-5 w-5"></i> รีเซ็ตผู้ฝึกนี้ </button>
       </div>
      </header>
      <main class="grid w-full gap-5 lg:grid-cols-[360px_1fr]">
@@ -142,15 +144,24 @@
          <h2 id="terminalHeading" class="text-xl font-bold text-[#D7FFF1]"><span id="terminalLabel">Student Terminal</span>: <span id="activeStudentName">Student 1</span></h2>
          <p id="hintText" class="mt-1 text-sm text-[#9BC8BE]">พิมพ์ help เพื่อดูคำสั่งทั้งหมด</p>
         </div>
-        <div class="flex items-center gap-2 text-sm font-bold text-[#00E59A]"><span class="h-3 w-3 rounded-full bg-[#00E59A] shadow-lg shadow-emerald-400/60"></span> ONLINE
+        <div class="flex items-center gap-2 text-sm font-bold text-[#00E59A]">
+         <span class="h-3 w-3 rounded-full bg-[#00E59A] shadow-lg shadow-emerald-400/60"></span> ONLINE
         </div>
        </div>
        <div class="overflow-hidden rounded-[24px] border border-[#164A42] bg-[#02090B] shadow-inner shadow-black">
-        <div class="flex items-center gap-2 border-b border-[#164A42] bg-[#0B1D22] px-4 py-3"><span class="h-3 w-3 rounded-full bg-red-400"></span> <span class="h-3 w-3 rounded-full bg-yellow-300"></span> <span class="h-3 w-3 rounded-full bg-[#00E59A]"></span> <span class="ml-3 truncate font-mono text-sm text-[#9BC8BE]">/home/student</span>
+        <div class="flex items-center gap-2 border-b border-[#164A42] bg-[#0B1D22] px-4 py-3">
+         <span class="h-3 w-3 rounded-full bg-red-400"></span> <span class="h-3 w-3 rounded-full bg-yellow-300"></span> <span class="h-3 w-3 rounded-full bg-[#00E59A]"></span> <span class="ml-3 truncate font-mono text-sm text-[#9BC8BE]">/home/student</span>
         </div>
         <div id="terminalOutput" class="terminal-scroll h-[430px] overflow-auto p-4 font-mono text-sm leading-6 text-[#D7FFF1]" role="log" aria-live="polite"></div>
-        <form id="commandForm" class="flex items-center gap-2 border-t border-[#164A42] bg-[#061014] p-3"><label for="commandInput" class="sr-only">พิมพ์คำสั่ง Linux</label> <span id="promptText" class="shrink-0 font-mono text-sm font-bold text-[#00E59A]">student@lab:~$</span> <input id="commandInput" class="w-full rounded-2xl border border-[#164A42] bg-[#0B1D22] px-4 py-3 font-mono text-sm text-[#D7FFF1] placeholder:text-[#6A938B]" placeholder="ลองพิมพ์: ls หรือ mkdir test" autocomplete="off"> <button type="submit" class="rounded-2xl bg-[#00E59A] px-4 py-3 font-bold text-[#04100D] transition hover:brightness-110"> Run </button>
+        <form id="commandForm" class="flex items-center gap-2 border-t border-[#164A42] bg-[#061014] p-3">
+         <label for="commandInput" class="sr-only">พิมพ์คำสั่ง Linux</label> <span id="promptText" class="shrink-0 font-mono text-sm font-bold text-[#00E59A]">student@lab:~$</span> <input id="commandInput" class="w-full rounded-2xl border border-[#164A42] bg-[#0B1D22] px-4 py-3 font-mono text-sm text-[#D7FFF1] placeholder:text-[#6A938B]" placeholder="ลองพิมพ์: ls หรือ mkdir test" autocomplete="off"> <button type="submit" class="rounded-2xl bg-[#00E59A] px-4 py-3 font-bold text-[#04100D] transition hover:brightness-110"> Run </button>
         </form>
+        <div id="editorPanel" class="hidden flex flex-col border-t border-[#164A42]">
+         <div class="flex items-center justify-between border-b border-[#164A42] bg-[#0B1D22] px-4 py-3"><span class="font-mono text-sm text-[#9BC8BE]" id="editorTitle">nano note.txt</span> <button id="closeEditorBtn" class="text-[#2DD4FF] hover:text-[#00E59A]" title="Close editor (Ctrl+X)"><i data-lucide="x" class="h-5 w-5"></i></button>
+         </div><textarea id="editorContent" class="h-[300px] flex-1 resize-none bg-[#02090B] p-4 font-mono text-sm text-[#D7FFF1] focus:outline-none" style="border: none;"></textarea>
+         <div class="border-t border-[#164A42] bg-[#061014] px-4 py-3 text-xs text-[#9BC8BE]"><span id="editorHint">Ctrl+S: Save | Ctrl+X: Exit</span>
+         </div>
+        </div>
        </div>
       </section>
      </main>
@@ -322,6 +333,8 @@
             "mv <source> <target>         ย้ายหรือเปลี่ยนชื่อ",
             "rm <file-or-folder>          ลบไฟล์หรือโฟลเดอร์",
             "basename <path>              แสดงชื่อท้ายสุดของ path",
+            "nano <file>                  แก้ไขไฟล์ด้วย nano",
+            "vi <file>                    แก้ไขไฟล์ด้วย vi/vim",
             "tree                         ดูโครงสร้างไฟล์",
             "clear                        ล้างหน้าจอ"
           ].join("\\n");
@@ -442,6 +455,51 @@
           return buildTree(start, pathDisplay(student.cwd).split("/").pop() || "~");
         }
 
+        case "nano": {
+          if (!args[0]) return "error: โปรดระบุชื่อไฟล์ เช่น nano note.txt";
+          const target = normalizePath(student.cwd, args[0]);
+          const { parent, name } = getParentAndName(student, target);
+          if (!parent || parent.type !== "dir") return "error: path ไม่ถูกต้อง";
+          
+          if (!parent.children[name]) {
+            parent.children[name] = { type: "file", content: "" };
+          }
+          
+          const file = parent.children[name];
+          if (file.type !== "file") return `error: ${args[0]} เป็นโฟลเดอร์`;
+          
+          student.editorMode = {
+            type: "nano",
+            filePath: target,
+            fileName: name,
+            content: file.content || ""
+          };
+          return "nano";
+        }
+
+        case "vi":
+        case "vim": {
+          if (!args[0]) return "error: โปรดระบุชื่อไฟล์ เช่น vi note.txt";
+          const target = normalizePath(student.cwd, args[0]);
+          const { parent, name } = getParentAndName(student, target);
+          if (!parent || parent.type !== "dir") return "error: path ไม่ถูกต้อง";
+          
+          if (!parent.children[name]) {
+            parent.children[name] = { type: "file", content: "" };
+          }
+          
+          const file = parent.children[name];
+          if (file.type !== "file") return `error: ${args[0]} เป็นโฟลเดอร์`;
+          
+          student.editorMode = {
+            type: "vi",
+            filePath: target,
+            fileName: name,
+            content: file.content || ""
+          };
+          return "vi";
+        }
+
         default:
           return `error: ไม่รู้จักคำสั่ง "${cmd}" — พิมพ์ help เพื่อดูคำสั่งที่ใช้ได้`;
       }
@@ -535,6 +593,20 @@
       event.preventDefault();
       const input = document.getElementById("commandInput");
       const student = getActiveStudent();
+      const cmd = input.value.trim();
+      
+      if (cmd === "nano" || cmd.startsWith("nano ") || cmd === "vi" || cmd.startsWith("vi ") || cmd === "vim" || cmd.startsWith("vim ")) {
+        runCommand(student, input.value);
+        const result = executeCommand(student, cmd.split(/\s+/)[0], cmd.split(/\s+/).slice(1));
+        if (result === "nano" || result === "vi") {
+          renderActiveStudent();
+          openEditor(student);
+          input.value = "";
+          input.focus();
+          return;
+        }
+      }
+      
       runCommand(student, input.value);
       input.value = "";
       renderActiveStudent();
@@ -559,6 +631,56 @@
       activeStudentId = reset.id;
       renderStudentTabs();
       renderActiveStudent();
+    });
+
+    function openEditor(student) {
+      if (!student.editorMode) return;
+      const editorPanel = document.getElementById("editorPanel");
+      const editorTitle = document.getElementById("editorTitle");
+      const editorContent = document.getElementById("editorContent");
+      
+      editorTitle.textContent = `${student.editorMode.type} ${student.editorMode.fileName}`;
+      editorContent.value = student.editorMode.content;
+      editorPanel.classList.remove("hidden");
+      editorContent.focus();
+    }
+
+    function closeEditor(student, save) {
+      if (!student.editorMode) return;
+      
+      if (save) {
+        const editorContent = document.getElementById("editorContent");
+        const target = normalizePath(student.cwd, student.editorMode.filePath);
+        const { parent, name } = getParentAndName(student, target);
+        if (parent && parent.children[name]) {
+          parent.children[name].content = editorContent.value;
+        }
+        addHistory(student, "system", `ไฟล์ ${student.editorMode.fileName} บันทึกแล้ว`);
+      }
+      
+      student.editorMode = null;
+      const editorPanel = document.getElementById("editorPanel");
+      editorPanel.classList.add("hidden");
+      renderActiveStudent();
+      document.getElementById("commandInput").focus();
+    }
+
+    document.getElementById("closeEditorBtn").addEventListener("click", () => {
+      const student = getActiveStudent();
+      closeEditor(student, true);
+    });
+
+    document.getElementById("editorContent").addEventListener("keydown", (event) => {
+      const student = getActiveStudent();
+      if (event.ctrlKey || event.metaKey) {
+        if (event.key === "s") {
+          event.preventDefault();
+          closeEditor(student, true);
+        } else if (event.key === "x") {
+          event.preventDefault();
+          closeEditor(student, true);
+        }
+      }
     });
 
     function applyConfig(config) {
@@ -663,5 +785,5 @@
     applyConfig(window.elementSdk ? window.elementSdk.config : defaultConfig);
     if (window.lucide) lucide.createIcons();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ff9d08c8ceccdf2',t:'MTc3OTQzMTg3MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ff9df153c0681e9',t:'MTc3OTQzMjQ2Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
